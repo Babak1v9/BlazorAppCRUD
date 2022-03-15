@@ -1,0 +1,59 @@
+﻿@page "/recipes"
+@inject IRecipeService RecipeService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Recipes</PageTitle>
+
+<h3>Recipes</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Rating</th>
+            <th>Preparation Time</th>
+            <th>Cooking Time</th>
+            <th>Difficulty</th>
+            <th>Calories</th>
+            <th>Instructions</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var recipe in RecipeService.Recipes)
+        {
+            <tr>
+                <td>@recipe.Name</td>
+                <td>@recipe.Description</td>
+                <td>@recipe.Rating</td>
+                <td>@recipe.PreparationTime</td>
+                <td>@recipe.CookingTime</td>
+                <td>@recipe.Difficulty</td>
+                <td>@recipe.Calories</td>
+                <td>@recipe.Instructions</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="(() => ShowRecipe(recipe.Id))"><i class="oi oi-pencil"></i></button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<button class="btn btn-primary" @onclick="CreateNewRecipe">Create New Recipe</button>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await RecipeService.GetAllRecipes();
+    }
+
+    void ShowRecipe(int id)
+    {
+        NavigationManager.NavigateTo($"singlerecipe/{id}");
+    }
+
+    void CreateNewRecipe()
+    {
+        NavigationManager.NavigateTo("/singlerecipe");
+    }
+}

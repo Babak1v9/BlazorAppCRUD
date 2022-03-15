@@ -1,0 +1,94 @@
+﻿@page "/singlerecipe"
+@page "/singlerecipe/{id:int}"
+@inject IRecipeService RecipeService
+
+@if (Id == null)
+{
+    <PageTitle>Create a new Recipe</PageTitle>
+    <h3>Create a new Recipe</h3>
+}
+else
+{
+    <PageTitle>Edit @recipe.Name</PageTitle>
+    <h3>Edit @recipe.Name</h3>
+}
+
+<EditForm Model="recipe" OnSubmit="HandleSubmit">
+    <div>
+        <label for="name">Name</label>
+        <InputText id="name" @bind-Value="recipe.Name" class="form-control"></InputText>
+    </div>
+    <div>
+        <label for="description">Description</label>
+        <InputText id="description" @bind-Value="recipe.Description" class="form-control"></InputText>
+    </div>
+    <div>
+        <label for="rating">Rating</label>
+        <InputNumber id="rating" @bind-Value="recipe.Rating" class="form-control"></InputNumber>
+    </div>
+    <div>
+        <label for="preparationtime">Preparation Time (in Minutes)</label>
+        <InputNumber id="preparationtime" @bind-Value="recipe.PreparationTime" class="form-control"></InputNumber>
+    </div>
+    <div>
+        <label for="cookingtime">Cooking Time (in Minutes)</label>
+        <InputNumber id="cookingtime" @bind-Value="recipe.CookingTime" class="form-control"></InputNumber>
+    </div>
+    <div>
+        <label for="difficulty">Difficulty</label>
+        <InputText id="difficulty" @bind-Value="recipe.Difficulty" class="form-control"></InputText>
+    </div>
+    <div>
+        <label for="calories">Calories</label>
+        <InputNumber id="calories" @bind-Value="recipe.Calories" class="form-control"></InputNumber>
+    </div>
+    <div>
+        <label for="instructions">Instructions</label>
+        <InputText id="instructions" @bind-Value="recipe.Instructions" class="form-control"></InputText>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">@btnText</button>
+    <button type="button" class="btn btn-danger" @onclick="DeleteRecipe">Delete Recipe</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    string btnText = string.Empty;
+
+    Recipe recipe = new Recipe();
+
+    protected override async Task OnInitializedAsync()
+    {
+        btnText = Id == null ? "Save New Recipe" : "Update Recipe";
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id == null)
+        {     
+        }
+        else
+        {
+            recipe = await RecipeService.GetRecipeById((int)Id);
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        if (Id == null)
+        { 
+            await RecipeService.CreateRecipe(recipe);
+        }
+        else
+        {
+            await RecipeService.UpdateRecipe(recipe);
+        }
+    }
+
+    async Task DeleteRecipe()
+    {
+        await RecipeService.DeleteRecipe(recipe.Id);
+    }
+}
